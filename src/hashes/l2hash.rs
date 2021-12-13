@@ -4,7 +4,7 @@ use super::iface::{HashFunction};
 
 
 
-struct L2Hash {
+pub struct L2Hash {
     _dim: usize,
     _nhashes: usize,
     _w: f64,
@@ -23,9 +23,13 @@ impl HashFunction for L2Hash {
             hashes[k] = (value / self._w).floor() as u32;
         }
     }
+
+    fn get_dims(&self) -> usize {
+        return self._dim;
+    }
 }
 
-fn make(dimensions: usize, n_hashes: usize, w: f64) -> Result<L2Hash, ()> {
+pub fn make(dimensions: usize, n_hashes: usize, w: f64) -> Result<L2Hash, ()> {
     let mut res = L2Hash { 
         _dim: dimensions, 
         _nhashes: n_hashes, 
@@ -52,41 +56,4 @@ fn make(dimensions: usize, n_hashes: usize, w: f64) -> Result<L2Hash, ()> {
         }
     }
 
-}
-
-#[cfg(test)]
-mod tests {
-    use super::super::iface::HashFunction;
-
-    #[test]
-    fn get_hash() {
-        let target_map_hashes = [-1137,-786,1346,-1393,3351,-1608,2101,-2002,1030,-988];
-
-        let dim = 10;
-        let N = 10;
-        let w = 0.01;
-
-        match super::make(dim, N, w) {
-            Err(_) => assert!(false),
-            Ok(hash) => {
-                let mut v : Vec<f64> = Vec::with_capacity(dim * 5);
-                let mut hashes : Vec<u32> = Vec::with_capacity(N);
-
-                let mut map : Vec<f64> = Vec::with_capacity(dim);
-                map.fill(5.0);
-
-                let mut maphashes = Vec::with_capacity(N);
-
-                hash.get_hash(map, &mut maphashes);
-
-                assert_eq!(target_map_hashes.len(), maphashes.len());
-                for i in 0..maphashes.len() {
-                    assert_eq!(target_map_hashes[i], maphashes[i]);
-                }
-            }
-
-        }
-
-
-    }
 }
